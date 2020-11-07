@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use Modern::Perl;
+use YAML::XS;
+
+my $cipherfile = pop @ARGV;
+open my $CIPHERTEXT, '<', "$cipherfile";
+
+my $ciphertext;
+
+my @frequency = (
+    'e','t','a','o','i','n','s','h','r','d','l','c','u','m','w','f','g','y','p','b','v','k','j','x','q','z'
+    );
+
+while (<$CIPHERTEXT>) {
+    $ciphertext .= $_;
+}
+
+say $ciphertext;
+
+my %freqs = ();
+
+foreach my $char (split //, $ciphertext) {
+    $freqs{$char}++ if ( $char =~ m{[A-Z]} );
+}
+
+my %cipherguess;
+
+
+foreach my $key (sort { $freqs{$b} <=> $freqs{$a} } keys %freqs ) {
+    my $freq = shift @frequency;
+    $cipherguess{$key}= $freq;
+    say "$key: $freqs{$key}\t?\t$freq";
+}
+
+
+open my $GUESSFILE, ">", "$cipherfile.guess.yaml"
+    or die "Can't open $cipherfile.guess.yaml for writing.";
+
+print $GUESSFILE YAML::XS::Dump(\%cipherguess);
+close $GUESSFILE;

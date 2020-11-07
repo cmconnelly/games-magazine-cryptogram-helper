@@ -1,0 +1,113 @@
+#!/usr/bin/env perl
+
+use Modern::Perl;
+use YAML::XS;
+
+my ($cipherfile) = @ARGV;
+my $guessfile = "$cipherfile.guess.yaml";
+
+### Load our ciphertext from file specified.
+
+open my $CIPHERTEXT, "<", $cipherfile
+    or die "Can't open ciphertext from $cipherfile.";
+
+my @ciphertext;
+
+while (<$CIPHERTEXT>) {
+    push @ciphertext, $_;
+}
+
+close $CIPHERTEXT;
+
+# say $ciphertext;
+
+
+### Get guesses from file.
+
+my $cipher = YAML::XS::LoadFile($guessfile);
+
+
+
+### Try some replacements.
+
+foreach my $cipherline (@ciphertext) {
+    chomp $cipherline;
+    my $translate = $cipherline;
+    foreach my $char ( keys %{$cipher} ) {
+        my $s;
+        #    say "doing $char -> $cipher->{$char}";
+        unless ( $cipher->{$char} ) {
+            $s = "_";
+        } else {
+            $s = lc($cipher->{$char});
+        }
+    # say "want to substitute $s for $char";
+    # say "substituting $s for $char";
+    $translate =~ s{$char}{$s}g;
+    }
+    say $cipherline;
+    say $translate;
+    say "";
+}
+
+
+### All done.
+exit(0);
+
+# my %cipher = {
+#    'A' => '',
+#    'B' => '',
+#    'C' => '',
+#    'D' => '',
+#    'E' => '',
+#    'F' => '',
+#    'G' => '',
+#    'H' => '',
+#    'I' => '',
+#    'J' => '',
+#    'K' => '',
+#    'L' => '',
+#    'M' => '',
+#    'N' => '',
+#    'O' => '',
+#    'P' => '',
+#    'Q' => '',
+#    'R' => '',
+#    'S' => '',
+#    'T' => '',
+#    'U' => '',
+#    'V' => '',
+#    'W' => '',
+#    'X' => '',
+#    'Y' => '',
+#    'Z' => '',
+# };
+
+# my %cipher = (
+#    'A' => 'W',
+#    'B' => 'A',
+#    'C' => '',
+#    'D' => '',
+#    'E' => '',
+#    'F' => 'L',
+#    'G' => '',
+#    'H' => '',
+#    'I' => '',
+#    'J' => '',
+#    'K' => '',
+#    'L' => '',
+#    'M' => '',
+#    'N' => '',
+#    'O' => '',
+#    'P' => '',
+#    'Q' => 'N',
+#    'R' => '',
+#    'S' => 'I',
+#    'T' => 'E',
+#    'U' => '',
+#    'V' => 'S',
+#    'W' => '',
+#    'X' => '',
+#    'Y' => '',
+#    'Z' => 'Y',
+# );
