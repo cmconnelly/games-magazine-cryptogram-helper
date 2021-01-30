@@ -25,17 +25,19 @@ foreach my $char (split //, $ciphertext) {
 }
 
 my %cipherguess;
-
+my $freqchart;
 
 foreach my $key (sort { $freqs{$b} <=> $freqs{$a} } keys %freqs ) {
     my $freq = shift @frequency;
     $cipherguess{$key}= $freq;
-    say "$key: $freqs{$key}\t?\t$freq";
+    $freqchart .= "\# $key: $freqs{$key}  ?  $freq\n";
 }
 
 
 open my $GUESSFILE, ">", "$cipherfile.guess.yaml"
     or die "Can't open $cipherfile.guess.yaml for writing.";
+
+print $GUESSFILE $freqchart;
 
 print $GUESSFILE YAML::XS::Dump(\%cipherguess);
 close $GUESSFILE;
